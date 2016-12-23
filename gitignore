@@ -1,0 +1,8 @@
+*.pyc
+
+*.DS_Store
+json_example.txt
+json_example2.txt
+test.html
+tidbit.js
+datatable_template.html
