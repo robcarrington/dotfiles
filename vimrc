@@ -1,22 +1,3 @@
-"       Amir Salihefendic
-"       http://amix.dk - amix@amix.dk
-"
-" Version: 
-"       5.0 - 29/05/12 15:43:36
-"
-" Blog_post: 
-"       http://amix.dk/blog/post/19691#The-ultimate-Vim-configuration-on-Github
-"
-" Awesome_version:
-"       Get this config, nice color schemes and lots of plugins!
-"
-"       Install the awesome version from:
-"
-"           https://github.com/amix/vimrc
-"
-" Syntax_highlighted:
-"       http://amix.dk/vim/vimrc.html
-"
 " Raw_version: 
 "       http://amix.dk/vim/vimrc.txt
 "
@@ -41,6 +22,10 @@
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " => General
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+execute pathogen#infect()
+
+set shell=/usr/local/bin/zsh
+
 " Sets how many lines of history VIM has to remember
 set history=500
 
@@ -50,6 +35,7 @@ filetype indent on
 
 " Set to auto read when a file is changed from the outside
 set autoread
+set number
 
 " With a map leader it's possible to do extra key combinations
 " like <leader>w saves the current file
@@ -67,16 +53,10 @@ command W w !sudo tee % > /dev/null
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " => VIM user interface
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-" Set 7 lines to the cursor - when moving vertically using j/k
-set so=7
+" Set 7 lines of vertical margin around cursor when moving up/down
+set scrolloff=7
 
-" Avoid garbled characters in Chinese language windows OS
-let $LANG='en' 
-set langmenu=en
-source $VIMRUNTIME/delmenu.vim
-source $VIMRUNTIME/menu.vim
-
-" Turn on the WiLd menu
+" Turn on vim command completion
 set wildmenu
 
 " Ignore compiled files
@@ -86,12 +66,6 @@ if has("win16") || has("win32")
 else
     set wildignore+=.git\*,.hg\*,.svn\*
 endif
-
-"Always show current position
-set ruler
-
-" Height of the command bar
-set cmdheight=2
 
 " A buffer becomes hidden when it is abandoned
 set hid
@@ -114,13 +88,13 @@ set smartcase
 " Highlight search results
 set hlsearch
 
-" Makes search act like search in modern browsers
+" Incremental search starts matching entered text right away
 set incsearch 
 
 " Don't redraw while executing macros (good performance config)
 set lazyredraw 
 
-" For regular expressions turn magic on
+" Makes regular expressions work the same as in grep
 set magic
 
 " Show matching brackets when text indicator is over them
@@ -134,45 +108,27 @@ set novisualbell
 set t_vb=
 set tm=500
 
-" Add a bit extra margin to the left
-set foldcolumn=1
-
-
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " => Colors and Fonts
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " Enable syntax highlighting
-syntax enable 
-
-try
-    colorscheme desert
-catch
-endtry
-
-set background=dark
-
-" Set extra options when running in GUI mode
-if has("gui_running")
-    set guioptions-=T
-    set guioptions-=e
-    set t_Co=256
-    set guitablabel=%M\ %t
-endif
+syntax enable
+colorscheme seoul256
 
 " Set utf8 as standard encoding and en_US as the standard language
 set encoding=utf8
 
 " Use Unix as the standard file type
-set ffs=unix,dos,mac
+set ffs=mac,unix,dos
 
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " => Files, backups and undo
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " Turn backup off, since most stuff is in SVN, git et.c anyway...
-set nobackup
-set nowb
-set noswapfile
+" set nobackup
+" set nowb
+" set noswapfile
 
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
@@ -180,9 +136,6 @@ set noswapfile
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " Use spaces instead of tabs
 set expandtab
-
-" Be smart when using tabs ;)
-set smarttab
 
 " 1 tab == 4 spaces
 set shiftwidth=4
@@ -195,7 +148,6 @@ set tw=500
 set ai "Auto indent
 set si "Smart indent
 set wrap "Wrap lines
-
 
 """"""""""""""""""""""""""""""
 " => Visual mode related
@@ -265,7 +217,7 @@ endtry
 "      \   exe "normal! g`\"" |
 "      \ endif
 " Remember info about open buffers on close
-" set viminfo^=%
+set viminfo^=%
 
 
 """"""""""""""""""""""""""""""
@@ -281,15 +233,11 @@ set statusline=\ %{HasPaste()}%F%m%r%h\ %w\ \ CWD:\ %r%{getcwd()}%h\ \ \ Line:\ 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " => Editing mappings
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-" Remap VIM 0 to first non-blank character
-map 0 ^
-
 " Move a line of text using ALT+[jk] or Comamnd+[jk] on mac
 nmap <M-j> mz:m+<cr>`z
 nmap <M-k> mz:m-2<cr>`z
 vmap <M-j> :m'>+<cr>`<my`>mzgv`yo`z
-vmap <M-k> :m'<-2<cr>`>my`<mzgv`yo`z
-
+vmap <M-k> :m'<-2<cr>`>my`<mzgv`yo`z 
 if has("mac") || has("macunix")
   nmap <D-j> <M-j>
   nmap <D-k> <M-k>
@@ -428,5 +376,10 @@ function! <SID>BufcloseCloseIt()
    endif
 endfunction
 
-execute pathogen#infect()
+
+" JSX syntax highlighting
 let g:jsx_ext_required = 0
+
+" Elm
+let g:elm_format_autosave = 1
+
