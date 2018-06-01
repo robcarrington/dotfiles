@@ -15,10 +15,14 @@
 # Install elm-vim, seoul256.vim, vim-javascript       
 # vim-jsx, vim-scala
 
-ln -s ~/dotfiles/tmux.conf ~/.tmux.conf
-ln -s ~/dotfiles/zshrc ~/.zshrc
-ln -s ~/dotfiles/zshenv ~/.zshenv
-ln -s ~/dotfiles/vimrc ~/.vimrc
-ln -s ~/dotfiles/gitignore ~/.gitignore
-ln -s ~/dotfiles/gitconfig ~/.gitconfig
-ln -s ~/dotfiles/iterm2_shell_integration.zsh ~/.iterm2_shell_integration.zsh
+# ln -s ~/dotfiles/iterm2_shell_integration.zsh ~/.iterm2_shell_integration.zsh
+DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
+
+for path in $DIR/*/; do
+    for subpath in $path*; do
+        FILE=$(basename $subpath)
+        if ln -s $subpath ~/.$FILE ; then
+            echo "Exported symlink for ~/.$FILE"
+        fi
+    done
+done

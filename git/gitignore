@@ -7,3 +7,6 @@ test.html
 tidbit.js
 datatable_template.html
 */elm-stuff
+target/
+_site/
+.sass-cache/
