@@ -23,6 +23,8 @@
 " - vim-surround
 " - syntastic
 " - vim-polyglot
+" - ultisnips
+"
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 
 execute pathogen#infect()
@@ -39,14 +41,13 @@ let g:jsx_ext_required = 0
 " Elm format on save
 let g:elm_format_autosave = 1
 
-set statusline+=%#warningmsg#
-set statusline+=%{SyntasticStatuslineFlag()}
-set statusline+=%*
+let g:ale_fixers = {
+\   'python': ['black'],
+\}
 
-let g:syntastic_always_populate_loc_list = 1
-let g:syntastic_auto_loc_list = 1
-let g:syntastic_check_on_open = 1
-let g:syntastic_check_on_wq = 0
+let g:UltiSnipsExpandTrigger="<leader>s"
+let g:UltiSnipsJumpForwardTrigger="<leader>sn"
+let g:UltiSnipsJumpBackwardTrigger="<leader>sb"
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " => General
@@ -149,7 +150,6 @@ set ffs=mac,unix,dos
 
 silent !mkdir ~/.vim/.backup > /dev/null 2>&1
 silent !mkdir ~/.vim/.swap > /dev/null 2>&1
-silent !mkdir ~/.vim/.backup > /dev/null 2>&1
 set undodir=~/.vim/.backup//
 set backupdir=~/.vim/.backup//
 set directory=~/.vim/.swap//
@@ -161,7 +161,7 @@ set undofile
 
 set backup
 au BufWritePre * let &backupext = '~' . localtime()
-au VimLeave * call <SID>DeleteOldBackups()
+au VimLeave * call <SID>DeleteOldBackups() > /dev/null 2>&1
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " => Text, tab and indent related
@@ -242,26 +242,7 @@ set statusline=\ %{HasPaste()}%F%m%r%h\ %w\ \ CWD:\ %r%{getcwd()}%h\ \ \ Line:\ 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " => Editing mappings
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-" Delete trailing white space on save, useful for Python and CoffeeScript ;)
-func! DeleteTrailingWS()
-  exe "normal mz"
-  %s/\s\+$//ge
-  exe "normal `z"
-endfunc
-autocmd BufWrite *.py :call DeleteTrailingWS()
-autocmd BufWrite *.coffee :call DeleteTrailingWS()
 
-"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-" => Spell checking
-"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-" Pressing ,ss will toggle and untoggle spell checking
-map <leader>ss :setlocal spell!<cr>
-
-" Shortcuts using <leader>
-map <leader>sn ]s
-map <leader>sp [s
-map <leader>sa zg
-map <leader>s? z=
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " => Misc
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
@@ -277,8 +258,8 @@ map <leader>x :e ~/buffer.md<cr>
 " Toggle paste mode on and off
 map <leader>pp :setlocal paste!<cr>
 
-:nnoremap <Tab> :bnext<CR>
-:nnoremap <S-Tab> :bprevious<CR>
+" :nnoremap <Tab> :bnext<CR>
+" :nnoremap <S-Tab> :bprevious<CR>
 
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
@@ -340,13 +321,15 @@ function! <SID>BufcloseCloseIt()
 endfunction
 
 function! s:DeleteOldBackups()
-    " Delete backups over 14 days old
-    let l:Old = (60 * 60 * 24 * 14)
+    " Delete backups over 30 days old
+    let l:Old = (60 * 60 * 24 * 30)
     let l:BackupFiles = split(glob(&backupdir."/*", 1)."\n".glob(&backupdir."/.[^.]*",1), "\n")
     let l:Now = localtime()
 
     " Try to move it to the operating system's Trash
-    if !empty(system("which gvfs-trash"))
+    if !empty(system("which Trash"))
+        let l:DelCmd = "mv {} ~/.Trash"
+    elseif !empty(system("which gvfs-trash"))
         let l:DelCmd = "gvfs-trash {}"
     elseif !empty(system("which rmtrash"))
         let l:DelCmd = "rmtrash {}"
@@ -356,7 +339,6 @@ function! s:DeleteOldBackups()
         if (l:Now - getftime(l:File)) > l:Old
             if !empty(l:DelCmd)
                 let l:Command = substitute(l:DelCmd, '{}', shellescape(l:File), "")
-                echo "Will run:" l:Command
                 call system(l:Command)
             else
                 call delete(l:File)
